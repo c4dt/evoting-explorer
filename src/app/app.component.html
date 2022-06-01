@@ -330,7 +330,7 @@
         <h3 class="center">Ballots</h3>
         <div class="card-container">
             <a *ngFor="let ballot of ballots" class="card" href="https://people.epfl.ch/{{ballot.user}}" target="other"
-            >{{ballot.user}}</a>
+            >Block: {{ballot.block}}<br>SCIPER: {{ballot.user}}</a>
         </div>
     </div>
 

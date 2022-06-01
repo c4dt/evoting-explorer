@@ -3,6 +3,11 @@ import {SkipchainRPC} from '@dedis/cothority/skipchain';
 import {Roster} from "@dedis/cothority/network";
 import {Ballot, Election, Transaction} from "@dedis/cothority/evoting/proto";
 
+interface BallotBlock {
+    user: number,
+    block: number,
+}
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -23,7 +28,7 @@ export class AppComponent implements OnInit {
 
     public election: Election | undefined;
     public elections: Election[] = [];
-    public ballots: Ballot[] = [];
+    public ballots: BallotBlock[] = [];
 
     constructor() {
     }
@@ -65,7 +70,7 @@ export class AppComponent implements OnInit {
             if (block.data.length > 0){
                 const tx = Transaction.decode(block.data);
                 if (tx.ballot !== null){
-                    this.ballots.push(tx.ballot);
+                    this.ballots.push({user: tx.ballot.user, block: block.index});
                 }
             }
         }
