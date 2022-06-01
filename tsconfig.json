@@ -2,6 +2,16 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "@dedis/cothority": [
+        "../../DEDIS/cothority/external/js/cothority/dist",
+        "node_modules/@dedis/cothority/*"
+      ],
+      "@dedis/cothority/*": [
+        "../../DEDIS/cothority/external/js/cothority/dist/*",
+        "node_modules/@dedis/cothority/*"
+      ]
+    },
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -16,6 +26,7 @@
     "importHelpers": true,
     "target": "es2017",
     "module": "es2020",
+    "allowSyntheticDefaultImports": true,
     "lib": [
       "es2018",
       "dom"
