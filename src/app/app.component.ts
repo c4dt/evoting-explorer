@@ -35,15 +35,17 @@ export class AppComponent implements OnInit {
 
     async ngOnInit() {
         const links = await this.getLinks();
+        let elections = [];
         for (const link of links) {
             const block = await this.sc.getSkipBlockByIndex(link, 1);
             const tx = Transaction.decode(block.skipblock.data);
             if (tx.election !== null){
-                console.dir(tx.election);
                 console.log("Election: ", tx.election.name["en"], tx.election.subtitle["en"]);
-                this.elections.push(tx.election);
+                console.dir(tx.election);
+                elections.push(tx.election);
             }
         }
+        this.elections = elections;
     }
 
     async getLinks(): Promise<Buffer[]> {
@@ -70,6 +72,8 @@ export class AppComponent implements OnInit {
             if (block.data.length > 0){
                 const tx = Transaction.decode(block.data);
                 if (tx.ballot !== null){
+                    console.log("Ballot of block", block.index);
+                    console.dir(tx.ballot);
                     this.ballots.push({user: tx.ballot.user, block: block.index});
                 }
             }
