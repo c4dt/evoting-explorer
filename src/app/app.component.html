@@ -313,7 +313,7 @@
     <div *ngIf="election === undefined">
         <h3 class="center">Elections</h3>
         <div class="card-container">
-            <span *ngFor="let election of elections.reverse()" class="card"
+            <span *ngFor="let election of elections" class="card"
                   (click)="showElection(election)">
             {{election.name["en"]}} - {{election.subtitle["en"]}}
         </span>

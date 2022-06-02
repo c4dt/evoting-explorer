@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
             if (tx.election !== null){
                 console.log("Election: ", tx.election.name["en"], tx.election.subtitle["en"]);
                 console.dir(tx.election);
-                elections.push(tx.election);
+                elections.unshift(tx.election);
             }
         }
         this.elections = elections;
