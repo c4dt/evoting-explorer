@@ -327,7 +327,36 @@
         <div class="card-container">
             <span class="card">{{election.name["en"]}} - {{election.subtitle["en"]}}</span>
         </div>
+        <div *ngIf="partials.length > 0">
+            <h3 class="center">Partial Decryptions</h3>
+            <p>This part contains the partial decryptions: each node can only decrypt a part of the message.
+                And only if all nodes agree that it's time to decrypt will the decryption succeed.
+                The number of votes here can be less than the ballots, as multiple voting is allowed, but only
+                the last vote counts.</p>
+            <div class="card-container">
+                <span *ngFor="let partial of partials" class="card">Block: {{partial.block}}<br>
+                Node: {{partial.node}}<br>
+                Votes: {{partial.votes}}</span>
+            </div>
+        </div>
+        <div *ngIf="mixes.length > 0">
+            <h3 class="center">Mixes from Nodes</h3>
+            <p>These blocks contain the mixing: each node randomly re-arranges the votes in such a way that it
+                can be proven to be the same as before, without being traceable. As long as at least 1 node is
+                honest, the vote is guaranteed to be anonymous.<br>
+                The number of votes here can be less than the ballots, as multiple voting is allowed, but only
+                the last vote counts.<br>
+                To make sure one failing node doesn't jeopardize the whole election, it is enough if 5 nodes
+                do the mixing.</p>
+            <div class="card-container">
+                <span *ngFor="let mix of mixes" class="card">Block: {{mix.block}}<br>
+                Node: {{mix.node}}<br>
+                Votes: {{mix.votes}}</span>
+            </div>
+        </div>
         <h3 class="center">Ballots</h3>
+        <p>Each ballot contains the encrypted choice of one user. Each user is allowed to cast multiple votes,
+            but only the last one will be taken into account.</p>
         <div class="card-container">
             <a *ngFor="let ballot of ballots" class="card" href="https://people.epfl.ch/{{ballot.user}}" target="other"
             >Block: {{ballot.block}}<br>SCIPER: {{ballot.user}}</a>
@@ -353,7 +382,7 @@
                 <path d="M0 0h24v24H0z" fill="none"/>
             </svg>
         </a>
-        Version 0.2.0
+        Version 0.3.0
     </footer>
 
 </div>
