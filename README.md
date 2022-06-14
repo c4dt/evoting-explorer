@@ -18,6 +18,18 @@ If you have any questions about this explorer, don't hesitate to contact
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.17.
 
+## Requirements
+
+I tried it using node in version 14 and 16. Version 18 does not work.
+To install the requirements, run the following:
+
+```bash
+npm i -g @angular/cli@12
+npm ci
+```
+
+After this, you can run the development server or the build.
+
 ### Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.

@@ -4,12 +4,20 @@
   "compilerOptions": {
     "paths": {
       "@dedis/cothority": [
-        "../../DEDIS/cothority/external/js/cothority/dist",
+        "cothority/external/js/cothority/dist",
         "node_modules/@dedis/cothority/*"
       ],
       "@dedis/cothority/*": [
-        "../../DEDIS/cothority/external/js/cothority/dist/*",
+        "cothority/external/js/cothority/dist/*",
         "node_modules/@dedis/cothority/*"
+      ],
+      "@dedis/kyber": [
+        "cothority/external/js/kyber/dist",
+        "node_modules/@dedis/kyber/*"
+      ],
+      "@dedis/kyber/*": [
+        "cothority/external/js/kyber/dist/*",
+        "node_modules/@dedis/kyber/*"
       ]
     },
     "baseUrl": "./",

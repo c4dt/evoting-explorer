@@ -2,6 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {SkipBlock, SkipchainRPC} from '@dedis/cothority/skipchain';
 import {Roster} from "@dedis/cothority/network";
 import {Election, Transaction} from "@dedis/cothority/evoting/proto";
+import {curve, Point} from "@dedis/kyber";
+
+// The curve to be used for all cryptographic operations. When the
+// golang-code uses suite.Point() or cothority.Suite.Point(), then
+// this corresponds to curve25519.point().
+const curve25519 = curve.newCurve("edwards25519");
 
 interface BallotBlock {
     user: number,
@@ -21,6 +27,8 @@ interface FinalizeBlock {
 })
 export class AppComponent implements OnInit {
     title = 'evoting-explorer';
+    // Definition of the EPFL blockchain for the e-voting, and a pointer to the only node that is available
+    // outside of EPFL.
     mainID = Buffer.from("d913b168318fc7dce938e8227016ce1dbe8732fc8d2b1159891e0046e491e858", "hex");
     r = Roster.fromTOML(`
     [[servers]]
@@ -32,6 +40,8 @@ export class AppComponent implements OnInit {
     `);
     sc = new SkipchainRPC(this.r);
 
+    // Elements to be displayed in the web-page. If an element is undefined or empty, the
+    // corresponding card view is not displayed.
     public election: Election | undefined;
     public elections: Election[] = [];
     public ballots: BallotBlock[] = [];
@@ -41,6 +51,9 @@ export class AppComponent implements OnInit {
     constructor() {
     }
 
+    /**
+     * Start by reading the main chain to discover all elections so far.
+     */
     async ngOnInit() {
         const links = await this.getLinks();
         let elections = [];
@@ -56,6 +69,9 @@ export class AppComponent implements OnInit {
         this.elections = elections;
     }
 
+    /**
+     * Returns all links going off from the main chain. Each link points to an independent election.
+     */
     async getLinks(): Promise<Buffer[]> {
         const ret: Buffer[] = [];
         const blocks = await this.sc.getUpdateChain(this.mainID, false, false, 1);
@@ -72,13 +88,21 @@ export class AppComponent implements OnInit {
         return ret;
     }
 
+    /**
+     * Shows the chosen election in the main view. This method fills in the class-variables used
+     * in the frontend to display the different steps of the election. It goes through all blocks
+     * and for every block fills in the corresponding field.
+     * @param e - the election to show
+     */
     async showElection(e: Election) {
         this.election = e;
         this.ballots = [];
         this.partials = [];
         this.mixes = [];
+        let shares: Point[][] = [];
         const blocks = await this.sc.getUpdateChain(e.id, false, false, 1);
-        for (const block of blocks.reverse()) {
+        blocks.reverse();
+        for (const block of blocks) {
             if (block.data.length > 0) {
                 const tx = Transaction.decode(block.data);
                 if (tx.ballot !== null) {
@@ -93,11 +117,22 @@ export class AppComponent implements OnInit {
                     console.log("Partial decryption in block", block.index);
                     console.dir(tx.partial);
                     this.partials.push(this.createFinalizedBlock(block, tx.partial.nodeid, tx.partial.points.length));
+                    // Prepare the shares in the correct order for the decryption
+                    const nodeID = tx.partial.nodeid;
+                    const nodeIndex = block.roster.list.findIndex((si) => si.id.equals(nodeID));
+                    shares[nodeIndex] = tx.partial.points_curve();
                 }
             }
         }
     }
 
+    /**
+     * Helper method to nicely display the mix and partial decryption blocks.
+     *
+     * @param block to be displayed
+     * @param nodeID initiator of this block
+     * @param votes number of votes in this block
+     */
     createFinalizedBlock(block: SkipBlock, nodeID: Buffer, votes: number): FinalizeBlock {
         const nodeSI = block.roster.list.find((si) => si.id.equals(nodeID));
         let node = "Not found";
@@ -111,6 +146,9 @@ export class AppComponent implements OnInit {
         }
     }
 
+    /**
+     * Clear the election field, which will display the overview of all elections.
+     */
     async showOverview() {
         this.election = undefined;
     }
