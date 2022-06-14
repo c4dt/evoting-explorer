@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {SkipBlock, SkipchainRPC} from '@dedis/cothority/skipchain';
 import {Roster} from "@dedis/cothority/network";
 import {Election, Transaction} from "@dedis/cothority/evoting/proto";
-import {curve, Point} from "@dedis/kyber";
+import {curve, Point, Scalar} from "@dedis/kyber";
 
 // The curve to be used for all cryptographic operations. When the
 // golang-code uses suite.Point() or cothority.Suite.Point(), then
@@ -152,4 +152,17 @@ export class AppComponent implements OnInit {
     async showOverview() {
         this.election = undefined;
     }
+}
+
+
+/**
+ * Returns the scalar set to the parameter.
+ *
+ * @param i the value of the scalar, only 56 bits.
+ * @return the scalar
+ */
+function setInt64(i: number): Scalar {
+    const buf = Buffer.alloc(8);
+    buf.writeBigInt64LE(BigInt(i));
+    return curve25519.scalar().setBytes(buf)
 }
